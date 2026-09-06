@@ -1,8 +1,10 @@
 import type { RouteRecordRaw } from "vue-router"
 
-export default [
+const routes: RouteRecordRaw[] = [
     {
         path: "/valorant-roulette",
         component: () => import("./pages/Home.vue")
     }
 ] satisfies RouteRecordRaw[]
+
+export default routes
