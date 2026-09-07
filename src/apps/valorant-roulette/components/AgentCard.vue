@@ -9,7 +9,7 @@
         }"
     >
         <img :src="agent.icon" id="icon" />
-        <p id="index">{{ index + 1 }}</p>
+        <p id="agent" v-if="selected">{{ agent.name }}</p>
     </div>
 </template>
 
@@ -65,19 +65,29 @@ export default {
     z-index: 2;
 }
 
-#index {
-    display: none;
-    top: 10px;
-    left: 15px;
+#agent {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    font-size: 40px;
-    z-index: 2;
+    font-size: 80px;
+    z-index: 3;
     color: white;
     font-weight: 800;
+    text-shadow: 0px 1px 10px black;
+    animation: fadeIn forwards 0.5s ease-in-out;
 }
 
 #icon {
     width: 100%;
     height: 100%;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0 }
+    100% { opacity: 1 }
 }
 </style>
