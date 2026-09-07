@@ -59,7 +59,7 @@ export default {
             
             this.itemIndex = selectedIndex 
         },
-        onRouletteFinish(event) {
+        onRouletteFinish(event: TransitionEvent) {
             if (event.propertyName !== "transform") return
             
             this.chosenAgent = this.itemIndex
