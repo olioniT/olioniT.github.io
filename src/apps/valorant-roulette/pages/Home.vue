@@ -1,8 +1,13 @@
 <template>
     <div id="home">
         <div id="pointer"></div>
-        <div id="container" :style="{transform: `translateX(-${offset}px)`}">
-            <AgentCard v-for="agent, index in agents" :selected="chosenAgent === (index)" :agent />
+        <div
+            id="cards"
+            ref="cards"
+            @transitionend="onRouletteFinish"
+            :style="{transform: `translateX(${offset}px)`, transition: `transform ${duration}s cubic-bezier(.04,.44,.36,.98)`}"
+        >
+            <AgentCard v-for="agent, index in agents" :selected="chosenAgent === (index)" :agent :index />
         </div>
         <button @click="roulette">Roulette</button>
     </div>
@@ -24,21 +29,40 @@ export default {
     components: {AgentCard},
     data() {
         return {
-            itemSize: 255,
-            itemDistance: 255 + 5,
-
             offset: 0,
-            chosenAgent: 99,
+            duration: 6,
+
+            itemGap: 15,
+            itemIndex: 0,
+            itemSize: 400,
+            itemDistance: 415,
+            
+            chosenAgent: -1,
             agents: ref<Agent[]>([]),
         }
     },
     methods: {
+        centreRoulette() {
+            const containerWidth = window.innerWidth
+
+            this.duration = 0
+            this.offset = ((containerWidth / 2) - (this.itemDistance / 2)) - (this.itemDistance * 3)
+        },
         roulette() {
             const containerWidth = window.innerWidth
             const selectedIndex = Math.floor(Math.random() * this.agents.length)
+
+            let distance = Math.abs(this.itemIndex - this.chosenAgent)
+
+            this.duration = Math.min(distance, this.agents.length) / this.agents.length + (6 - 1) + 1
+            this.offset = ((containerWidth / 2) - (this.itemDistance / 2)) - (this.itemDistance * selectedIndex)
             
-            this.offset = (selectedIndex * this.itemDistance) - (containerWidth / 2) + (this.itemSize / 2)
-            this.chosenAgent = selectedIndex
+            this.itemIndex = selectedIndex 
+        },
+        onRouletteFinish(event) {
+            if (event.propertyName !== "transform") return
+            
+            this.chosenAgent = this.itemIndex
         }
     },
     async mounted() {
@@ -62,6 +86,8 @@ export default {
                     "gradient": agent.backgroundGradientColors
                 })
             }
+
+            this.centreRoulette()
         } catch (err) {
             console.error(err)
         }
@@ -89,25 +115,17 @@ export default {
     position: absolute;
     background-color: #FF4655;
     z-index: 1;
-    top: 23vh;
+    top: 19vh;
     clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
 }
 
-#container {
+#cards {
     width: 100vw;
+    height: 80vh;
     display: flex;
-    gap: 5px;
-    height: fit-content;
-    transform: translateX(0);
-    transition: transform 6s cubic-bezier(.15, 1, .9, 1);
-
-    /* width: 100vw;
-    height: fit-content;
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    gap: 5px;
-    overflow: hidden; */
+    align-items: center;
+    gap: 15px;
+    /* transition: transform 6s cubic-bezier(.15, 1, .53, .98); */
 }
 
 button {
@@ -118,14 +136,11 @@ button {
     background-color: #FF4655;
     color: white;
     transition: 0.3s;
+    position: absolute;
+    bottom: 17vh;
 }
 
 button:hover {
     box-shadow: 0px 0px 10px 2.5px#FF4655;
-}
-
-@keyframes rightToLeft {
-    0% { right: 190px; }
-    100% { right: -100; }
 }
 </style>
