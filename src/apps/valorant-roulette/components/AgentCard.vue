@@ -1,15 +1,30 @@
 <template>
-    <div id="card" :class="selected ? 'active' : 'inactive'" :style="{backgroundColor: selected ? `#${agent.gradient[0]}` : ''}" >
-        <img :src="agent.icon" id="icon" />
+    <div
+        id="card"
+        :style="{
+            backgroundColor: getBackgroundColor(),
+            opacity: selected ? '1' : '0.5',
+        }"
+    >
+        <img :src="agent.icon" id="icon" draggable="false"/>
     </div>
 </template>
 
 <script lang="ts">
 export default {
     name: "AgentCard",
-    props: ["agent", "index", "selected"],
+    props: ["agent", "inactive", "index", "selected"],
     methods: {
-
+        setToInactive() {
+            this.$emit("setToAvoid", this.agent.name)
+        },
+        getBackgroundColor() {
+            if (this.inactive) {
+                return "red"
+            } else {
+                return this.selected ? `#${this.agent.gradient[0]}` : ''
+            }
+        }
     }
 }
 </script>
@@ -21,21 +36,15 @@ export default {
     background-color: rgb(54, 54, 54);
     border-radius: 2.5px;
     transition: 0.15s;
-}
-
-#card.active {
-    background-color: white;
-    /* border: 4px solid white; */
-    /* outline: 4px solid white; */
-    /* box-shadow: 0px 0px 10px 2.5px white; */
-}
-
-#card.inactive {
-    opacity: 0.5;
+    cursor: pointer;
 }
 
 #icon {
     width: 100%;
     height: 100%;
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
 }
 </style>

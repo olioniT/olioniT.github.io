@@ -4,7 +4,7 @@
             <RoleCard v-for="role in roles" :role :selected="filteredRole === role.name" @click="filterByRole(role.name)"/>
         </div>
         <div id="cards">
-            <AgentCard v-for="agent, index in filteredAgents" :selected="chosenAgent === index" :agent :index />
+            <AgentCard v-for="agent, index in filteredAgents" :inactive="agent.inactive" @click="toggleAvoid(agent.name)" :selected="chosenAgent === index" :agent :index />
         </div>
         <button @click="roulette">Roulette</button>
     </div>
@@ -17,10 +17,11 @@ import AgentCard from '../components/AgentCard.vue';
 import RoleCard from '../components/RoleCard.vue';
 
 interface Agent {
-    icon: String,
-    name: String,
-    gradient: String[],
-    role: String
+    icon: string,
+    name: string,
+    gradient: string[],
+    role: string,
+    inactive: boolean
 }
 
 interface Role {
@@ -56,7 +57,9 @@ export default {
                     "icon": agent.displayIcon,
                     "name": agent.displayName,
                     "gradient": agent.backgroundGradientColors,
-                    "role": agent.role.displayName
+                    "role": agent.role.displayName,
+                    "inactive": false
+                    
                 })
 
                 if (!this.roles.some(role => role.name === agent.role.displayName)) {
@@ -73,16 +76,26 @@ export default {
         }
     },
     methods: {
+        getRandomAgentIndex(prev?: number) {
+            let index = 0
+
+            do {
+                index = Math.floor(Math.random() * this.filteredAgents.length)
+            } while (
+                index === prev || this.filteredAgents[index]?.inactive
+            )
+
+            return index
+        },
         async roulette() {
             const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-            for (let i = 0; i < 10; i++) {
-                let chance = Math.floor(Math.random() * this.filteredAgents.length)
-                this.chosenAgent = chance
+            
+            for (let i = 0; i < 9; i++) {
+                this.chosenAgent = this.getRandomAgentIndex()
                 await sleep(100)
             }
 
-            this.chosenAgent = Math.floor(Math.random() * this.filteredAgents.length)
+            this.chosenAgent = this.getRandomAgentIndex()
         },
         filterByRole(role: string) {
             this.chosenAgent = -1
@@ -94,6 +107,13 @@ export default {
                 this.filteredRole = ""
                 this.filteredAgents = this.agents
             }
+        },
+        toggleAvoid(agentName: string) {
+            this.filteredAgents.forEach((agent) => {
+                if (agent.name === agentName) {
+                    agent.inactive = !agent.inactive
+                }
+            })
         }
     }
 }

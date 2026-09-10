@@ -1,6 +1,6 @@
 <template>
     <div id="card">
-        <img :src="role.icon" id="icon" :style="{opacity: selected ? '1' : '0.5'}">
+        <img :src="role.icon" id="icon" :style="{opacity: selected ? '1' : '0.5'}" draggable="false">
     </div>
 </template>
 
@@ -22,5 +22,8 @@ export default {
     height: 100%;
     cursor: pointer;
     transition: 0.15s;
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 </style>
