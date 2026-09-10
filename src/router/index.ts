@@ -7,4 +7,14 @@ const router = createRouter({
     routes: modules.flatMap(module => module.routes)
 })
 
+router.afterEach((to) => {
+    const name = "olioniT.github.io"
+    
+    if (to.meta.title) {
+        document.title = to.meta.title.toString()
+    } else {
+        document.title = name
+    }
+})
+
 export default router
