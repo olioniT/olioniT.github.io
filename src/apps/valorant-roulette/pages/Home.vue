@@ -16,6 +16,8 @@ import { ref } from 'vue';
 import AgentCard from '../components/AgentCard.vue';
 import RoleCard from '../components/RoleCard.vue';
 
+type NestedRecord = Record<string, string | { [key: string]: NestedRecord }>
+
 interface Agent {
     icon: String,
     name: String,
@@ -51,15 +53,13 @@ export default {
             const apiObj = await response.json()
             const agents = apiObj.data
 
-            agents.forEach((agent) => {
+            agents.forEach((agent: any) => {
                 this.agents.push({
                     "icon": agent.displayIcon,
                     "name": agent.displayName,
                     "gradient": agent.backgroundGradientColors,
                     "role": agent.role.displayName
                 })
-
-                this.filteredAgents = this.agents
 
                 if (!this.roles.some(role => role.name === agent.role.displayName)) {
                     this.roles.push({
@@ -68,6 +68,8 @@ export default {
                     })
                 }
             })
+
+            this.filteredAgents = this.agents
         } catch (err) {
             console.error(err)
         }
