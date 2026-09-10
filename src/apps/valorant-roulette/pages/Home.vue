@@ -16,8 +16,6 @@ import { ref } from 'vue';
 import AgentCard from '../components/AgentCard.vue';
 import RoleCard from '../components/RoleCard.vue';
 
-type NestedRecord = Record<string, string | { [key: string]: NestedRecord }>
-
 interface Agent {
     icon: String,
     name: String,
@@ -75,7 +73,15 @@ export default {
         }
     },
     methods: {
-        roulette() {
+        async roulette() {
+            const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+            for (let i = 0; i < 10; i++) {
+                let chance = Math.floor(Math.random() * this.filteredAgents.length)
+                this.chosenAgent = chance
+                await sleep(100)
+            }
+
             this.chosenAgent = Math.floor(Math.random() * this.filteredAgents.length)
         },
         filterByRole(role: string) {
